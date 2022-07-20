@@ -29,7 +29,19 @@ class ListProjectsCommand extends Command
      */
     public function handle()
     {
-        $this->table(['ID', 'Name', 'Short Code'], Project::orderBy('name', 'ASC')->select(['id', 'name', 'short_code'])->get()->toArray());
+        $this->table(['ID', 'Name', 'Short Code', 'This Week', 'Last 30 Days', 'All Time', 'Last Entry'],
+            Project::orderBy('name', 'ASC')->get()->map(function ($project) {
+                return [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                    'short_code' => $project->short_code,
+                    'this_week' => $project->this_week,
+                    'last 30 days' => $project->last_thirty,
+                    'all_time' => $project->all_time,
+                    'last_entry' => $project->last_entry,
+                ];
+            })->toArray());
+        return 0;
     }
 
     /**

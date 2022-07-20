@@ -64,7 +64,6 @@ class StartProjectCommand extends Command
         return 0;
     }
 
-
     public function check_if_there_is_already_project_being_tracked()
     {
         $log = TimeLog::open()->first();
