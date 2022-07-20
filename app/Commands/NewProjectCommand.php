@@ -30,20 +30,22 @@ class NewProjectCommand extends Command
      */
     public function handle()
     {
-        $name = null;
-        $short_code = null;
-
+        // Determine or prompt user for the new projects name
         if (!empty($this->argument('name'))) {
             $name = trim($this->argument('name'));
         } else {
             $name = trim($this->ask('What should the project be called?  (eg. Acme Corp Project)'));
         }
 
+        // Stop execution if user has not set a project name
         if (empty($name)) {
             $this->error('Unable to create project without a name');
-            return;
+            return 1;
         }
 
+
+        // Determine or prompt user if they would like a project short code & what it should be
+        $short_code = null;
         if (!empty($this->argument('shortCode'))) {
             $short_code = trim($this->argument('shortCode'));
         } else {
@@ -52,6 +54,7 @@ class NewProjectCommand extends Command
             }
         }
 
+        // Inform user of successful input validation
         $this->info("Now creating project $name" . (is_null($short_code) ? '' : ' (' . $short_code . ')'));
 
         $project = Project::create([
@@ -59,7 +62,10 @@ class NewProjectCommand extends Command
             'short_code' => $short_code,
         ]);
 
-        $this->info("Project: [" . $project->id . '] ' . $project->name . (is_null($short_code) ? '' : ' (' . $short_code . ')') . ' created');
+        // Inform user a completed project creation
+        $this->info(sprintf("Project: %s created.", $project->detailed_title));
+
+        return 0;
     }
 
     /**
@@ -70,6 +76,6 @@ class NewProjectCommand extends Command
      */
     public function schedule(Schedule $schedule): void
     {
-        
+
     }
 }

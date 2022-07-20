@@ -31,7 +31,7 @@ class DeleteProjectCommand extends Command
     public function handle()
     {
         $project = null;
-        
+
         if (!empty($this->option("id"))) {
             $project_id = intval(trim($this->option("id")));
             $project = Project::find($project_id);
@@ -42,23 +42,23 @@ class DeleteProjectCommand extends Command
             $project = Project::where('short_code', $project_short_code)->first();
         }
 
-        if (empty($poject)) {
+        if (empty($project)) {
             $project = $this->select_project();
         }
 
 
         if (empty($project)) {
             $this->error('Project not found');
-            return;
+            return 1;
         }
 
-        $confirmation = sprintf("Are you sure you want to delete this project? [%d] %s (short code: %s)", $project->id, $project->name, $project->short_code);
-        if ($this->confirm($confirmation)) {
+
+        if ($this->confirm(sprintf("Are you sure you want to delete this project? %s", $project->detailed_title))) {
             TimeLog::where('project_id', $project->id)->delete();
             $project->delete();
             $this->info('Project Deleted');
         }
-
+        return 0;
     }
 
 

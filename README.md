@@ -54,9 +54,6 @@ php timr project:start
 
 # Begin time tracking on project with short code of acp
 php timr project:start acp 
-
-# Begin time tracking on project with id of 7
-php timr project:start --id=7
 ```
 
 *stop working on project*

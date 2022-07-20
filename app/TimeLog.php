@@ -15,6 +15,11 @@ class TimeLog extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class);
