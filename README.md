@@ -13,7 +13,7 @@ terminal window open.
 
 ## commands / usage
 
-*new project*
+**new project**
 
 ```bash
 # Create a new project using the prompts
@@ -26,27 +26,39 @@ php timr project:new "Acme Corp Project"
 php timr project:new "Acme Corp Project" acp
 ```
 
-*list projects*
+---
+
+**edit project**
+
+```bash
+# Edit project with id of 7 (will prompt you for each field)
+php timr project:edit 7
+```
+
+---
+
+**list projects**
 
 ```bash
 # Output a list of projects in your database
 php timr project:list
 ```
 
-*delete project*
+_sample output_
+<img src="img/project-list.png">
+
+---
+
+**delete project**
 
 ```bash
-# Delete project using prompts
-php timr project:delete
-
-# Delete project with ID of 7
-php timr project:delete --id=7
-
-# Delete project with short code of "acp"
-php timr project:delete --code=acp
+# Delete project with ID of 7 (will ask you to confirm delete)
+php timr project:delete 7
 ```
 
-*begin working on project*
+---
+
+**begin working on project**
 
 ```bash
 # Begin time tracking on project (using prompts)
@@ -56,11 +68,56 @@ php timr project:start
 php timr project:start acp 
 ```
 
-*stop working on project*
+---
+
+**stop working on project**
 
 ```bash
-# End project time tracking
+# End project time tracking (will prompt you to select which project, if more than 1 are active)
 php timr project:stop 
+```
+
+---
+
+**show project entries**
+
+```bash
+# Show Time Entries for project with short code of una
+php timr project:log una
+```
+
+_sample_
+<img src="img/project-log.png">
+
+**show non-project specific entries**
+
+```bash
+# Display time tracking entries for all projects (default -30 days to now)
+php timr log:list
+
+# Display time tracking entries for all projects between 2022-01-01 and 2022-12-31
+php timr log:list --from=2022-01-01 --to=2022-12-31
+```
+
+_sample_
+<img src="img/log-list.png"/>
+
+---
+
+**edit time log entry**
+
+```bash
+# edit time log entry with ID of 21 (look on log:list or project:log to get the ID.  Will prompt for each field)
+php timr log:edit 21
+```
+
+---
+
+**delete time log entry**
+
+```bash
+# delete time log entry with id of 21.  Will confirm before deleting
+php timr log:delete 21
 ```
 
 ## installation / getting started

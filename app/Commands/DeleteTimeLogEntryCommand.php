@@ -31,7 +31,7 @@ class DeleteTimeLogEntryCommand extends Command
     {
         $entry = TimeLog::find($this->argument('id'));
 
-        if (empty($project)) {
+        if (empty($entry)) {
             $this->error("Unable to find entry");
             return 1;
         }

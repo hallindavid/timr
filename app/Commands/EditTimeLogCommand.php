@@ -32,7 +32,7 @@ class EditTimeLogCommand extends Command
     {
         $entry = TimeLog::find($this->argument('id'));
 
-        if (empty($project)) {
+        if (empty($entry)) {
             $this->error("Unable to find entry");
             return 1;
         }
@@ -40,7 +40,6 @@ class EditTimeLogCommand extends Command
         $this->info("Found Entry for Project: " . $entry->project->detailed_title);
 
         $updates = [];
-
 
         if ($this->confirm("Would you like the change the start time from " . $entry->local_started_at->format('M j, Y g:i a') . '?')) {
             $new_started_at = Carbon::createFromFormat(
