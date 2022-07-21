@@ -44,7 +44,7 @@ class StartProjectCommand extends Command
         if (empty($this->argument("shortCode"))) {
             $project = $this->select_project();
         } else {
-            $project = Project::firstWhere('short_code', $this->argument('short_code'));
+            $project = Project::firstWhere('short_code', $this->argument('shortCode'));
         }
 
         // Halt execution if no project selected

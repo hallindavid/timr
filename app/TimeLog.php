@@ -34,4 +34,14 @@ class TimeLog extends Model
     {
         $query->whereNotNull('ended_at')->whereNotNull('started_at');
     }
+
+    public function getLocalStartedAtAttribute()
+    {
+        return $this->started_at->timezone(config('app.user_timezone'));
+    }
+
+    public function getLocalEndedAtAttribute()
+    {
+        return $this->ended_at->timezone(config('app.user_timezone'));
+    }
 }

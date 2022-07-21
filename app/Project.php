@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\MinuteHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,7 +32,7 @@ class Project extends Model
 
     public function getThisWeekAttribute()
     {
-        return $this->format_time(DB::table('time_logs')
+        return MinuteHelper::format_minutes(DB::table('time_logs')
             ->where('project_id', $this->id)
             ->where('started_at', '>', Carbon::now(config('app.user_timezone'))->startOfWeek(Carbon::SUNDAY)->timezone('UTC')->format('Y-m-d H:i:s'))
             ->whereNotNull('ended_at')
@@ -41,7 +42,7 @@ class Project extends Model
 
     public function getLastThirtyAttribute()
     {
-        return $this->format_time(DB::table('time_logs')
+        return MinuteHelper::format_minutes(DB::table('time_logs')
             ->where('project_id', $this->id)
             ->where('started_at', '>', Carbon::now(config('app.user_timezone'))->subDays(30)->setTime(0, 0, 0)->timezone('UTC')->format('Y-m-d H:i:s'))
             ->whereNotNull('ended_at')
@@ -51,7 +52,7 @@ class Project extends Model
 
     public function getAllTimeAttribute()
     {
-        return $this->format_time(DB::table('time_logs')
+        return MinuteHelper::format_minutes(DB::table('time_logs')
             ->where('project_id', $this->id)
             ->whereNotNull('ended_at')
             ->selectRaw("SUM(ROUND((JULIANDAY(ended_at) - JULIANDAY(started_at)) * 1440)) as minutes")
@@ -70,21 +71,6 @@ class Project extends Model
 
         return $last_entry->started_at->timezone(config('app.user_timezone'))->format('M j, Y g:i a')
             . (is_null($last_entry->ended_at) ? '(open)' : '');
-    }
-
-    private function format_time($minutes)
-    {
-        if (empty($query->minutes)) {
-            return '-';
-        }
-
-        $minutes = intval($query->minutes);
-        if ($minutes < 60) {
-            return $minutes . ' min';
-        }
-
-        return floor($minutes / 60) . ' hrs'
-            . (($minutes % 60) > 0 ? ($minutes % 60) . ' min' : '');
     }
 
 
