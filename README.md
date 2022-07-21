@@ -89,6 +89,8 @@ php timr project:log una
 _sample_
 <img src="img/project-log.png">
 
+---
+
 **show non-project specific entries**
 
 ```bash
