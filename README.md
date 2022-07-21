@@ -84,6 +84,9 @@ php timr project:stop
 ```bash
 # Show Time Entries for project with short code of una
 php timr project:log una
+
+# Show time log entries for project with short code of una, between 2022-01-01 and 2022-02-01
+php timr project:log una --from=2022-01-01 --to=2022-02-01
 ```
 
 _sample_
