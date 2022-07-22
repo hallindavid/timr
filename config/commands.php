@@ -56,12 +56,26 @@ return [
 
     'hidden' => [
         NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
-        Symfony\Component\Console\Command\DumpCompletionCommand::class,
-        Symfony\Component\Console\Command\HelpCommand::class,
-        Illuminate\Console\Scheduling\ScheduleRunCommand::class,
-        Illuminate\Console\Scheduling\ScheduleListCommand::class,
-        Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
-        LaravelZero\Framework\Commands\StubPublishCommand::class,
+        Symfony\Component\Console\Command\DumpCompletionCommand::class, // completion
+        Symfony\Component\Console\Command\HelpCommand::class, // help
+        LaravelZero\Framework\Commands\StubPublishCommand::class, // stub:publish
+        \Illuminate\Database\Console\Migrations\MigrateCommand::class, // migrate
+        \NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class, // test
+
+        \LaravelZero\Framework\Commands\BuildCommand::class, // app:build
+        \LaravelZero\Framework\Commands\InstallCommand::class, // app:install
+
+        \LaravelZero\Framework\Commands\MakeCommand::class, //make:command
+        \LaravelZero\Framework\Commands\TestMakeCommand::class, // make:test
+        \Illuminate\Database\Console\Migrations\MigrateMakeCommand::class, // make:migration
+        \Illuminate\Foundation\Console\ModelMakeCommand::class, //make:model
+
+        \Illuminate\Database\Console\Migrations\FreshCommand::class, // migrate:fresh
+        \Illuminate\Database\Console\Migrations\InstallCommand::class, // migrate:install
+        \Illuminate\Database\Console\Migrations\RefreshCommand::class, // migrate:refresh
+        \Illuminate\Database\Console\Migrations\ResetCommand::class, // migrate:reset
+        \Illuminate\Database\Console\Migrations\RollbackCommand::class, // migrate:rollback
+        \Illuminate\Database\Console\Migrations\StatusCommand::class, // migrate:status
     ],
 
     /*
@@ -76,17 +90,10 @@ return [
     */
 
     'remove' => [
-        \Pest\Laravel\Commands\PestInstallCommand::class,
-        \Pest\Laravel\Commands\PestTestCommand::class,
-        \Pest\Laravel\Commands\PestDatasetCommand::class,
-        \NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class,
-        \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
-        \Illuminate\Console\Scheduling\ScheduleListCommand::class,
-        \LaravelZero\Framework\Commands\RenameCommand::class,
-        \Illuminate\Database\Console\Migrations\MigrateMakeCommand::class,
-//        \Illuminate\Database\Console\Migrations\FreshCommand::class,
-        \Illuminate\Database\Console\Migrations\RefreshCommand::class,
-        \LaravelZero\Framework\Commands\TestMakeCommand::class,
+        \Pest\Laravel\Commands\PestInstallCommand::class, // pest:install
+        \Pest\Laravel\Commands\PestTestCommand::class, // pest:test
+        \Pest\Laravel\Commands\PestDatasetCommand::class, // pest:dataset
+        \LaravelZero\Framework\Commands\RenameCommand::class, // app:rename
     ],
 
 ];
