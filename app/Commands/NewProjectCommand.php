@@ -3,12 +3,14 @@
 namespace App\Commands;
 
 use App\Project;
+use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class NewProjectCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *
@@ -30,6 +32,7 @@ class NewProjectCommand extends Command
      */
     public function handle()
     {
+
         // Determine or prompt user for the new projects name
         if (!empty($this->argument('name'))) {
             $name = trim($this->argument('name'));

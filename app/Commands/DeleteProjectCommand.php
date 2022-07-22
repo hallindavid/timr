@@ -4,11 +4,13 @@ namespace App\Commands;
 
 use App\Project;
 use App\TimeLog;
+use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class DeleteProjectCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *

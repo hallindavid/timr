@@ -6,9 +6,11 @@ use App\Project;
 use App\TimeLog;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use App\Traits\RequiresSetup;
 
 class StartProjectCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *

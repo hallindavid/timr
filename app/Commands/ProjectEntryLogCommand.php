@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Helpers\MinuteHelper;
 use App\Project;
 use App\TimeLog;
+use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class ProjectEntryLogCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *

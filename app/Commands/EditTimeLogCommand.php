@@ -3,12 +3,14 @@
 namespace App\Commands;
 
 use App\TimeLog;
+use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
 use LaravelZero\Framework\Commands\Command;
 
 class EditTimeLogCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *

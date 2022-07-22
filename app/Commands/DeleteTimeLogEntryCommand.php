@@ -3,11 +3,13 @@
 namespace App\Commands;
 
 use App\TimeLog;
+use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class DeleteTimeLogEntryCommand extends Command
 {
+    use RequiresSetup;
     /**
      * The signature of the command.
      *

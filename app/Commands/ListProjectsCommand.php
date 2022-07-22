@@ -5,9 +5,12 @@ namespace App\Commands;
 use App\Project;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use App\Traits\RequiresSetup;
 
 class ListProjectsCommand extends Command
 {
+    use RequiresSetup;
+
     /**
      * The signature of the command.
      *
@@ -29,6 +32,9 @@ class ListProjectsCommand extends Command
      */
     public function handle()
     {
+
+        $this->comment($_SERVER['HOME']);
+
         $this->table(['ID', 'Name', 'Short Code', 'This Week', 'Last 30 Days', 'All Time', 'Last Entry'],
             Project::orderBy('name', 'ASC')->get()->map(function ($project) {
                 return [
