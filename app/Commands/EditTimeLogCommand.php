@@ -64,7 +64,7 @@ class EditTimeLogCommand extends Command
         }
 
 
-        if ($this->confirm("Would you like the notes on this entry?")) {
+        if ($this->confirm("Would you like to edit the notes on this entry?")) {
             $updates['notes'] = $this->ask("Please enter notes for this entry");
         }
 
