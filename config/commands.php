@@ -68,7 +68,6 @@ return [
         \LaravelZero\Framework\Commands\MakeCommand::class, //make:command
         \LaravelZero\Framework\Commands\TestMakeCommand::class, // make:test
         \Illuminate\Database\Console\Migrations\MigrateMakeCommand::class, // make:migration
-        \Illuminate\Foundation\Console\ModelMakeCommand::class, //make:model
 
         \Illuminate\Database\Console\Migrations\FreshCommand::class, // migrate:fresh
         \Illuminate\Database\Console\Migrations\InstallCommand::class, // migrate:install
@@ -76,6 +75,9 @@ return [
         \Illuminate\Database\Console\Migrations\ResetCommand::class, // migrate:reset
         \Illuminate\Database\Console\Migrations\RollbackCommand::class, // migrate:rollback
         \Illuminate\Database\Console\Migrations\StatusCommand::class, // migrate:status
+        \Illuminate\Database\Console\DbCommand::class,
+        \Illuminate\Database\Console\WipeCommand::class,
+
     ],
 
     /*
