@@ -135,6 +135,13 @@ php timr log:delete 21
 4. run `php timr list` to check out the commands you can run
 5. have fun!
 
+## build and run
+
+```bash
+php timr app:build timr
+mv builds/timr /usr/local/bin/ # change this path to somewhere where it executes
+```
+
 ## license
 
 timr is an open-source software licensed under the MIT license.
