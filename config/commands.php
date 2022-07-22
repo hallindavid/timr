@@ -41,6 +41,8 @@ return [
 
     'add' => [
         // ..
+        \Illuminate\Console\Scheduling\ScheduleListCommand::class,
+        \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
     ],
 
     /*

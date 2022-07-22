@@ -142,6 +142,13 @@ php timr app:build timr
 mv builds/timr /usr/local/bin/ # change this path to somewhere where it executes
 ```
 
+
+## scheduling an hourly desktop notification
+If you want to set this up, you need to set up a cronjob
+```bash
+* * * * * php /path-to-timr/timr schedule:run >> /dev/null 2>&1  # this is taken from here: https://laravel-zero.com/docs/task-scheduling
+```
+
 ## license
 
 timr is an open-source software licensed under the MIT license.

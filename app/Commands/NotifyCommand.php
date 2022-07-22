@@ -7,21 +7,21 @@ use App\TimeLog;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class StatusCommand extends Command
+class NotifyCommand extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'status {--notify : send a desktop notification, see https://laravel-zero.com/docs/send-desktop-notifications }';
+    protected $signature = 'notify';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Shows your current project status';
+    protected $description = 'designed to be a cron job - every hour it will send a desktop notification if you are currently working on a project';
 
     /**
      * Execute the console command.
@@ -32,18 +32,20 @@ class StatusCommand extends Command
     {
         $open_logs = TimeLog::open()->orderBy('started_at', 'ASC')->get();
 
-        $terminal_messages = array();
+        $notification_messages = array();
 
         foreach ($open_logs as $log) {
-            $terminal_messages[] = sprintf("Tracking %s since %s (%s)",
-                $log->project->detailed_title,
+            $min = round(((strtotime(now()) - strtotime($log->started_at)) / 60), 1);
+
+            $notification_messages[] = sprintf("%s since %s (%s)",
+                $log->project->name,
                 $log->local_started_at->format('g:i a'),
-                $log->started_at->diffForHumans(['parts' => 2])
+                MinuteHelper::format_minutes($min)
             );
         }
 
-        foreach ($terminal_messages as $msg) {
-            $this->info($msg);
+        if (count($notification_messages) > 0) {
+            $this->notify("timr status", implode("\n", $notification_messages), "timr.png");
         }
 
         return 0;
@@ -57,6 +59,10 @@ class StatusCommand extends Command
      */
     public function schedule(Schedule $schedule): void
     {
-
+        $schedule->command(static::class)
+            ->timezone(config('app.user_timezone'))
+            ->between('06:00', '21:00')
+            ->weekdays()
+            ->hourly();
     }
 }

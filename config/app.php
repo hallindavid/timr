@@ -58,6 +58,7 @@ return [
     ],
 
     // Desired Timezone
+    'timezone'=>'UTC',
     // All database times are stored in UTC, and then will be converted to this before being shown on output
     'user_timezone' => 'America/New_York'
 
