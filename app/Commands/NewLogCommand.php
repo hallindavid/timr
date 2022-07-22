@@ -3,27 +3,25 @@
 namespace App\Commands;
 
 use App\Project;
-use App\TimeLog;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Carbon;
 use LaravelZero\Framework\Commands\Command;
-use App\Traits\RequiresSetup;
 
-class StartProjectCommand extends Command
+class NewLogCommand extends Command
 {
-    use RequiresSetup;
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'start {shortCode? : the project short code}';
+    protected $signature = 'log:new {shortCode? : the project short code}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'begin tracking time on a project';
+    protected $description = 'create an entry for for a project';
 
     /**
      * Execute the console command.
@@ -32,17 +30,6 @@ class StartProjectCommand extends Command
      */
     public function handle()
     {
-        // Warn user of projects that are already in progress
-        $project_in_progress = $this->check_if_there_is_already_project_being_tracked();
-
-        if (!empty($project_in_progress)) {
-            $this->error("You have a project that is already in progress.  " . $project_in_progress->detailed_title);
-            if (!$this->confirm("Would you like to proceed?")) {
-                return 0;
-            }
-        }
-
-        // Determine or prompt for the project to begin work on
         if (empty($this->argument("shortCode"))) {
             $project = $this->select_project();
         } else {
@@ -55,39 +42,46 @@ class StartProjectCommand extends Command
             return 1;
         }
 
-        // Create the time log for the project
-        $project->time_logs()->create([
-            'started_at' => now(),
-        ]);
 
-        // Inform user of successful creation
-        $this->info("Started tracking project: " . $project->detailed_title);
+        $new_started_at = Carbon::createFromFormat(
+            "Y-m-d H:i",
+            $this->ask("Please enter the start date/time in format Y-m-d H:i (local timezone)"),
+            config('app.user_timezone'));
 
-        return 0;
-    }
-
-    public function check_if_there_is_already_project_being_tracked()
-    {
-        $log = TimeLog::open()->first();
-        if (!empty($log)) {
-            return $log->project;
+        if ($new_started_at !== false) {
+            $updates['started_at'] = $new_started_at->timezone('UTC');
         }
-        return null;
+
+        $new_ended_at = Carbon::createFromFormat(
+            "Y-m-d H:i",
+            $this->ask("Please enter the end date/time in format Y-m-d H:i (local timezone)"),
+            config('app.user_timezone'));
+
+        if ($new_ended_at !== false) {
+            $updates['ended_at'] = $new_ended_at->timezone('UTC');
+        }
+
+        $updates['notes'] = $this->ask("Please enter notes for this entry");
+
+
+        $project->time_logs()->create($updates);
+        $this->info("Entry Created");
+        return 0;
+
     }
 
+    // Re-usable select project function
     public function select_project()
     {
         $this->table(['ID', 'Name', 'Short Code'], Project::orderBy('name', 'ASC')->select(['id', 'name', 'short_code'])->get()->toArray());
-        $search_input = trim($this->ask('Which project would you like to begin tracking? (short code or ID)'));
+        $search_input = trim($this->ask('Which project would you like to add an entry to? (short code or ID)'));
 
         if (is_numeric($search_input)) {
             $project = Project::find($search_input);
         } else {
             $project = Project::firstWhere('short_code', $search_input);
         }
-
         return $project;
-
     }
 
     /**

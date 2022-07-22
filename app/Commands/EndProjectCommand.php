@@ -15,7 +15,7 @@ class EndProjectCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'project:stop';
+    protected $signature = 'stop';
 
     /**
      * The description of the command.

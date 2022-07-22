@@ -41,8 +41,6 @@ return [
 
     'add' => [
         // ..
-        \Illuminate\Console\Scheduling\ScheduleListCommand::class,
-        \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
     ],
 
     /*
@@ -80,6 +78,7 @@ return [
         \Illuminate\Database\Console\DbCommand::class,
         \Illuminate\Database\Console\WipeCommand::class,
 
+        \Illuminate\Console\Scheduling\ScheduleRunCommand::class,
     ],
 
     /*

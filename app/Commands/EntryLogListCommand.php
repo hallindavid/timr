@@ -18,7 +18,7 @@ class EntryLogListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'log:list {--from= : (YYYY-MM-DD) start of reporting period default: -30 days } {--to= : (YYYY-MM-DD) end of reporting period default:today  }';
+    protected $signature = 'log {--from= : (YYYY-MM-DD) start of reporting period default: -30 days } {--to= : (YYYY-MM-DD) end of reporting period default:today  }';
 
     /**
      * The description of the command.

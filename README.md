@@ -62,10 +62,10 @@ php timr project:delete 7
 
 ```bash
 # Begin time tracking on project (using prompts)
-php timr project:start
+php timr start
 
 # Begin time tracking on project with short code of acp
-php timr project:start acp 
+php timr start acp 
 ```
 
 ---
@@ -74,7 +74,7 @@ php timr project:start acp
 
 ```bash
 # End project time tracking (will prompt you to select which project, if more than 1 are active)
-php timr project:stop 
+php timr stop 
 ```
 
 ---
@@ -98,10 +98,10 @@ _sample_
 
 ```bash
 # Display time tracking entries for all projects (default -30 days to now)
-php timr log:list
+php timr log
 
 # Display time tracking entries for all projects between 2022-01-01 and 2022-12-31
-php timr log:list --from=2022-01-01 --to=2022-12-31
+php timr log --from=2022-01-01 --to=2022-12-31
 ```
 
 _sample_
@@ -112,8 +112,20 @@ _sample_
 **edit time log entry**
 
 ```bash
-# edit time log entry with ID of 21 (look on log:list or project:log to get the ID.  Will prompt for each field)
+# edit time log entry with ID of 21 (look on log or project:log to get the ID.  Will prompt for each field)
 php timr log:edit 21
+```
+
+---
+
+**create a new time log entry**
+
+```bash
+# create new log entry with project selection prompts
+php timr log:new
+
+# create new log entry with project shortcode jdu
+php timr log:new jdu
 ```
 
 ---
@@ -142,9 +154,10 @@ php timr app:build timr
 mv builds/timr /usr/local/bin/ # change this path to somewhere where it executes
 ```
 
-
 ## scheduling an hourly desktop notification
+
 If you want to set this up, you need to set up a cronjob
+
 ```bash
 * * * * * php /path-to-timr/timr schedule:run >> /dev/null 2>&1  # this is taken from here: https://laravel-zero.com/docs/task-scheduling
 ```
