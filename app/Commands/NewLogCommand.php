@@ -42,10 +42,15 @@ class NewLogCommand extends Command
             return 1;
         }
 
+        $date_of_entry = false;
+        while (!$date_of_entry) {
+            $date_of_entry = date_create_from_format("Y-m-d", $this->ask("Please enter the date of the entry in format YYYY-MM-DD"));
+        }
+
 
         $new_started_at = Carbon::createFromFormat(
             "Y-m-d H:i",
-            $this->ask("Please enter the start date/time in format Y-m-d H:i (local timezone)"),
+            $date_of_entry->format('Y-m-d') . ' ' . $this->ask("Please enter the start time in format HH:MM (local timezone, 24 hour time)"),
             config('app.user_timezone'));
 
         if ($new_started_at !== false) {
@@ -54,8 +59,14 @@ class NewLogCommand extends Command
 
         $new_ended_at = Carbon::createFromFormat(
             "Y-m-d H:i",
-            $this->ask("Please enter the end date/time in format Y-m-d H:i (local timezone)"),
+            $date_of_entry->format('Y-m-d') . ' ' . $this->ask("Please enter the end time in format HH:MM (local timezone, 24 hour time)"),
             config('app.user_timezone'));
+
+
+        // If times cross over midnight, rollover the next day
+        if ($new_ended_at < $new_started_at) {
+            $new_ended_at->addDay();
+        }
 
         if ($new_ended_at !== false) {
             $updates['ended_at'] = $new_ended_at->timezone('UTC');
