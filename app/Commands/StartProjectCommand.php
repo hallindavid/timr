@@ -11,12 +11,13 @@ use App\Traits\RequiresSetup;
 class StartProjectCommand extends Command
 {
     use RequiresSetup;
+
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'start {shortCode? : the project short code}';
+    protected $signature = 'start {shortCode? : the project short code} { --round=5 : round out the start time to nearest interval here }';
 
     /**
      * The description of the command.
@@ -55,13 +56,19 @@ class StartProjectCommand extends Command
             return 1;
         }
 
+        // Handle Rounding
+        $started_at = now()->setSeconds(0);
+        $round = $this->option('round');
+        $started_at->setMinutes((floor($started_at->format('i') / $round) * $round));
+
+
         // Create the time log for the project
         $project->time_logs()->create([
-            'started_at' => now(),
+            'started_at' => $started_at,
         ]);
 
         // Inform user of successful creation
-        $this->info("Started tracking project: " . $project->detailed_title);
+        $this->info(sprintf("Started tracking project: %s as of %s", $project->detailed_title, $started_at->timezone(config('app.user_timezone'))->format('g:i a')));
 
         return 0;
     }
@@ -87,7 +94,6 @@ class StartProjectCommand extends Command
         }
 
         return $project;
-
     }
 
     /**

@@ -22,7 +22,7 @@ class MinuteHelper
         }
 
         if (intval($minutes) > 0) {
-            $sections[] = $minutes . ' min';
+            $sections[] = round($minutes) . ' min';
         }
 
         $output = trim(implode(" ", $sections));

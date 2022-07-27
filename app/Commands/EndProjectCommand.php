@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Helpers\MinuteHelper;
 use App\TimeLog;
 use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
@@ -10,12 +11,13 @@ use LaravelZero\Framework\Commands\Command;
 class EndProjectCommand extends Command
 {
     use RequiresSetup;
+
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'stop';
+    protected $signature = 'stop { --round=5 : round out the end time to the nearest interval here }';
 
     /**
      * The description of the command.
@@ -67,19 +69,26 @@ class EndProjectCommand extends Command
         } else {
             $time_log = $time_logs->first();
         }
-
-        $this->info(sprintf("Stop tracking project: %s", $time_log->project->detailed_title));
-
-
         // Prompt user for note about entry
         $note = $this->ask("Would you like to leave a note on this entry to say what you worked on?");
 
+        // Handle Rounding
+        $round = $this->option('round');
+        $ended_at = now();
+        $ended_at->setMinutes((ceil($ended_at->format('i') / $round) * $round));
+        $ended_at->setSeconds(0);
+
         $time_log->update([
-            'ended_at' => now(),
+            'ended_at' => $ended_at,
             'notes' => $note,
         ]);
 
-        $this->info(sprintf("Stopped tracking project %s", $time_log->project->detailed_title));
+        $this->info(sprintf("Stopped tracking project: %s at %s.  [Entry Length: %s]",
+            $time_log->project->detailed_title,
+            $ended_at->timezone(config('app.user_timezone'))->format('g:i a'),
+            MinuteHelper::format_minutes((strtotime($time_log->fresh()->ended_at->format('Y-m-d H:i:s')) - strtotime($time_log->started_at)) / 60),
+        ));
+
         return 0;
     }
 

@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Helpers\MinuteHelper;
+use App\Project;
 use App\TimeLog;
 use App\Traits\RequiresSetup;
 use Illuminate\Console\Scheduling\Schedule;
@@ -13,12 +14,13 @@ use LaravelZero\Framework\Commands\Command;
 class EntryLogListCommand extends Command
 {
     use RequiresSetup;
+
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'log {--from= : (YYYY-MM-DD) start of reporting period default: -30 days } {--to= : (YYYY-MM-DD) end of reporting period default:today  }';
+    protected $signature = 'log {shortCode? : the project short code} {--from= : (YYYY-MM-DD) start of reporting period default: -30 days } {--to= : (YYYY-MM-DD) end of reporting period default:today  } {--notes : show notes in table}';
 
     /**
      * The description of the command.
@@ -34,6 +36,11 @@ class EntryLogListCommand extends Command
      */
     public function handle()
     {
+        $project = null;
+        if (!empty($this->argument("shortCode"))) {
+            $project = Project::firstWhere('short_code', $this->argument('shortCode'));
+        }
+
         // Determine date/time range (using local timezone on I/O and UTC on DB queries
         $from_local = now(config('app.user_timezone'))->setTime(0, 0, 0)->subDays(30);
         $to_local = now(config('app.user_timezone'));
@@ -62,24 +69,30 @@ class EntryLogListCommand extends Command
             $to_local->format('M j, Y'),
         ));
 
-
         // Query for results
         $time_logs = TimeLog::with(['project'])
             ->where(DB::raw("IFNULL(ended_at, strftime('%Y-%m-%d %H:%M:%S','now'))"), '>=', $from)
             ->where('started_at', '<=', $to)
-            ->orderBy('started_at', 'ASC')
+            ->when(!empty($project), function ($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })->orderBy('started_at', 'ASC')
             ->select('id', 'project_id', 'started_at', 'ended_at', 'notes', DB::raw("ROUND((JULIANDAY(IFNULL(ended_at,strftime('%Y-%m-%d %H:%M:%S','now'))) - JULIANDAY(started_at)) * 1440) as minutes"))
             ->get()->map(function ($entry) {
-                return [
+                $record = [
                     'log_id' => $entry->id,
-                    'project_id' => $entry->project_id,
+                    'short_code' => $entry->project->short_code,
                     'project' => $entry->project->name,
                     'date' => $entry->started_at->timezone(config('app.user_timezone'))->format('M j, Y'),
                     'start' => $entry->started_at->timezone(config('app.user_timezone'))->format('g:i a'),
                     'end' => empty($entry->ended_at) ? '(open)' : $entry->ended_at->timezone(config('app.user_timezone'))->format('g:i a'),
                     'minutes' => MinuteHelper::format_minutes($entry->minutes),
-                    'notes' => $entry->notes,
                 ];
+
+                if ($this->option('notes')) {
+                    $record['notes'] = $entry->notes;
+                }
+
+                return $record;
             })->toArray();
 
 
@@ -90,11 +103,23 @@ class EntryLogListCommand extends Command
             ->selectRaw("SUM(ROUND((JULIANDAY(IFNULL(ended_at,strftime('%Y-%m-%d %H:%M:%S','now'))) - JULIANDAY(started_at)) * 1440)) as minutes")
             ->first()->minutes;
 
-        // Append Totals Row to table output
-        $time_logs[] = ['', '', '', '','', 'TOTAL:', MinuteHelper::format_minutes($net_minutes), ''];
+        // Build Totals Row
+        $totals_row = ['', '', '', '', '', 'TOTAL:', MinuteHelper::format_minutes($net_minutes)];
+        if ($this->option('notes')) {
+            $totals_row[] = '';
+        }
+        $time_logs[] = $totals_row;
+
+
+        // Build Headings
+        $headings = ['Entry ID', 'Code', 'Project', 'Date', 'Start', 'End', 'Minutes'];
+        if ($this->option('notes')) { // Append notes column if notes are included
+            $headings[] = 'Notes';
+        }
+
 
         // Display Table
-        $this->table(['Entry ID', 'Project ID', 'Project', 'Date', 'Start', 'End', 'Minutes', 'Notes'], $time_logs);
+        $this->table($headings, $time_logs);
 
         return 0;
     }
