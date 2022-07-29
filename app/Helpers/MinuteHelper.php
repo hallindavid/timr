@@ -9,10 +9,10 @@ class MinuteHelper
 
         $sections = [];
 
-        if (intval($minutes) > (60 * 24)) { // Days
-            $days = floor($minutes / (60 * 24));
+        if (intval($minutes) > (1440)) { // Days
+            $days = floor($minutes / 1440);
             $sections[] = $days . ' days';
-            $minutes = $minutes % (60 * 24);
+            $minutes = $minutes % (1440);
         }
 
         if (intval($minutes) >= 60) { // Hours

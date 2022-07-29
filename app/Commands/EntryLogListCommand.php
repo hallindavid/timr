@@ -99,6 +99,9 @@ class EntryLogListCommand extends Command
         // Query for total
         $net_minutes = TimeLog::where(DB::raw("IFNULL(ended_at, strftime('%Y-%m-%d %H:%M:%S','now'))"), '>=', $from)
             ->where('started_at', '<=', $to)
+            ->when(!empty($project), function ($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })
             ->orderBy('started_at', 'ASC')
             ->selectRaw("SUM(ROUND((JULIANDAY(IFNULL(ended_at,strftime('%Y-%m-%d %H:%M:%S','now'))) - JULIANDAY(started_at)) * 1440)) as minutes")
             ->first()->minutes;
