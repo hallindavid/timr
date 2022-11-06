@@ -20,7 +20,14 @@ class EntryLogListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'log {shortCode? : the project short code} {--from= : (YYYY-MM-DD) start of reporting period default: -30 days } {--to= : (YYYY-MM-DD) end of reporting period default:today  } {--notes : show notes in table}';
+    protected $signature = 'log {shortCode? : the project short code}
+                                {--billed : only show tags that are billed }
+                                {--unbilled : only show unbilled entries }
+                                {--logged : only show tags that are logged }
+                                {--unlogged : only show unlogged records}
+                                {--from= : (YYYY-MM-DD) start of reporting period default: -30 days }
+                                {--to= : (YYYY-MM-DD) end of reporting period default:today  }
+                                {--notes : show notes in table}';
 
     /**
      * The description of the command.
@@ -73,23 +80,38 @@ class EntryLogListCommand extends Command
         $time_logs = TimeLog::with(['project'])
             ->where(DB::raw("IFNULL(ended_at, strftime('%Y-%m-%d %H:%M:%S','now'))"), '>=', $from)
             ->where('started_at', '<=', $to)
+            ->when(!empty($this->option('billed')), function ($query) {
+                $query->where('billed', 1);
+            })
+            ->when(!empty($this->option('unbilled')), function ($query) {
+                $query->where('billed', 0);
+            })
+            ->when(!empty($this->option('logged')), function ($query) {
+                $query->where('logged', 1);
+            })
+            ->when(!empty($this->option('unlogged')), function ($query) {
+                $query->where('logged', 0);
+            })
             ->when(!empty($project), function ($query) use ($project) {
                 $query->where('project_id', $project->id);
             })->orderBy('started_at', 'ASC')
-            ->select('id', 'project_id', 'started_at', 'ended_at', 'notes', DB::raw("ROUND((JULIANDAY(IFNULL(ended_at,strftime('%Y-%m-%d %H:%M:%S','now'))) - JULIANDAY(started_at)) * 1440) as minutes"))
+            ->select('id', 'project_id', 'started_at', 'ended_at', 'logged','billed','tag', 'notes', DB::raw("ROUND((JULIANDAY(IFNULL(ended_at,strftime('%Y-%m-%d %H:%M:%S','now'))) - JULIANDAY(started_at)) * 1440) as minutes"))
             ->get()->map(function ($entry) {
                 $record = [
                     'log_id' => $entry->id,
-                    'short_code' => $entry->project->short_code,
-                    'project' => $entry->project->name,
+                    'project' => sprintf("(%s) %s", $entry->project->short_code, $entry->project->name),
                     'date' => $entry->started_at->timezone(config('app.user_timezone'))->format('M j, Y'),
                     'start' => $entry->started_at->timezone(config('app.user_timezone'))->format('g:i a'),
                     'end' => empty($entry->ended_at) ? '(open)' : $entry->ended_at->timezone(config('app.user_timezone'))->format('g:i a'),
                     'minutes' => MinuteHelper::format_minutes($entry->minutes),
+                    'billed' => $entry->billed ? "<info>✔</info>" : '',
+                    'logged' => $entry->logged ? "<info>✔</info>" : '',
                 ];
+
 
                 if ($this->option('notes')) {
                     $record['notes'] = $entry->notes;
+                    $record['tags'] = $entry->tag;
                 }
 
                 return $record;
@@ -107,7 +129,7 @@ class EntryLogListCommand extends Command
             ->first()->minutes;
 
         // Build Totals Row
-        $totals_row = ['', '', '', '', '', 'TOTAL:', MinuteHelper::format_minutes($net_minutes)];
+        $totals_row = ['', '', '', '', 'TOTAL:', MinuteHelper::format_minutes($net_minutes)];
         if ($this->option('notes')) {
             $totals_row[] = '';
         }
@@ -115,9 +137,10 @@ class EntryLogListCommand extends Command
 
 
         // Build Headings
-        $headings = ['Entry ID', 'Code', 'Project', 'Date', 'Start', 'End', 'Minutes'];
+        $headings = ['Entry ID', 'Project', 'Date', 'Start', 'End', 'Minutes', 'Billed', 'Logged'];
         if ($this->option('notes')) { // Append notes column if notes are included
             $headings[] = 'Notes';
+            $headings[] = 'Tags';
         }
 
 

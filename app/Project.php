@@ -13,7 +13,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'short_code'];
+    protected $fillable = ['name', 'short_code', 'last_bill', 'next_bill', 'weely_hours'];
 
     public function time_logs()
     {

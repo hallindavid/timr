@@ -19,11 +19,20 @@ class TimeLogFactory extends Factory
     {
         $started_at = $this->faker->dateTimeBetween('-2 years', 'now');
         $ended_at = Carbon::parse($started_at)->addMinutes((rand(1, 32) * 15));
+        $tag = null;
+
+        if ($this->faker->boolean) {
+            $tag = $this->faker->bothify("????-###");
+        }
+
 
         return [
             'started_at' => $started_at,
             'ended_at' => $ended_at,
             'notes' => $this->faker->sentence,
+            'billed' => $this->faker->boolean,
+            'logged' => $this->faker->boolean,
+            'tag' => $tag,
         ];
     }
 }

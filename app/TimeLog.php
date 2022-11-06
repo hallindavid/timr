@@ -13,11 +13,16 @@ class TimeLog extends Model
         'started_at',
         'ended_at',
         'notes',
+        'billed',
+        'logged',
+        'tag',
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
+        'billed' => 'boolean',
+        'logged' => 'boolean',
     ];
 
     public function project()
